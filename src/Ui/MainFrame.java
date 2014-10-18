@@ -1,6 +1,9 @@
 package Ui;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -11,6 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
+
+import Checker.Check;
+import tools.StorageCheck;
 /*
  * 定义MainFrame继承Jfame类。
  * 在该类中定义组件，实现界面
@@ -33,6 +39,8 @@ public class MainFrame extends JFrame{
 	JLabel redking = new JLabel(new ImageIcon("img\\redking.png"));
 	JLabel blue;
 	JLabel blueking = new JLabel(new ImageIcon("img\\blueking.png"));
+	public static int id = 1;
+	//初始化函数init（）；
 	private void init() {
 		//初始化组件
 		
@@ -65,6 +73,8 @@ public class MainFrame extends JFrame{
 				red =  new JLabel( new ImageIcon("img\\red.png"));
 				panel2.add(red);
 				red.setBounds(w, h, 60,60);
+				//将棋子对象存储到hashmap中
+				StorageCheck.addCheck( id, new Check(id,"red",w/60+1,h/60+1));
 				w+=120;
 				}
 			}else{
@@ -73,12 +83,14 @@ public class MainFrame extends JFrame{
 				red =  new JLabel( new ImageIcon("img\\red.png"));
 				panel2.add(red);
 				red.setBounds(w, h, 60, 60);
+				StorageCheck.addCheck( id, new Check(id,"red",w/60+1,h/60+1));
 				w+=120;
 				}
 			}
 			h+=60;
+			id +=1;
 		}
-		//添加篮子
+		//添加蓝子
 		h = 360;
 		for(int i = 1; i <= 4;i++ ){
 			if(i%2==1){
@@ -87,6 +99,7 @@ public class MainFrame extends JFrame{
 				blue = new JLabel(new ImageIcon("img\\blue.png"));
 				panel2.add(blue);
 				blue.setBounds(w, h, 60,60);
+				StorageCheck.addCheck( id, new Check(id,"blue",w/60+1,h/60+1));
 				w+=120;
 				}
 			}else{
@@ -95,10 +108,12 @@ public class MainFrame extends JFrame{
 			   blue = new JLabel(new ImageIcon("img\\blue.png"));
 				panel2.add(blue);
 				blue.setBounds(w, h, 60, 60);
+				StorageCheck.addCheck( id, new Check(id,"blue",w/60+1,h/60+1));
 				w+=120;
 				}
 			}
 			h+=60;
+			id +=1;
 		}
 		this.getContentPane().add(panel2);
 		panel2.setBounds(0, 0,600,600);
@@ -106,5 +121,16 @@ public class MainFrame extends JFrame{
 		this.setResizable(false);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//添加事件监听
+		//对棋盘进行监听，获取被选中的棋子
+		panel2.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				Point point = e.getPoint();
+				int x = point.x/60+1;
+				int y = point.y/60+1;
+				//通过迭代器获取到选中的棋子
+			}
+		});
 	}
+	
 }
