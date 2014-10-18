@@ -1,9 +1,14 @@
 package Ui;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -13,9 +18,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
-import Checker.Check;
+import checker.Check;
 import tools.StorageCheck;
 /*
  * 定义MainFrame继承Jfame类。
@@ -35,11 +41,18 @@ public class MainFrame extends JFrame{
 	JScrollPane js;
 	Border b = BorderFactory.createLineBorder(Color.red);
 	//定义棋子组件
-	JLabel red ;
-	JLabel redking = new JLabel(new ImageIcon("img\\redking.png"));
-	JLabel blue;
-	JLabel blueking = new JLabel(new ImageIcon("img\\blueking.png"));
+	private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
+	Check red;
+	Check blue;
+	Image redImage = toolkit.getImage("img\\red.png");
+	Image redkingImage = toolkit.getImage("img\\redking.png");
+	Image blueImage = toolkit.getImage("img\\blue.png");
+	Image bluekingImage = toolkit.getImage("img\\blue.png");
+
+	//定义棋子的id
 	public static int id = 1;
+	//定义棋子类对象，用来存储选择到的棋子
+	Check check = null;
 	//初始化函数init（）；
 	private void init() {
 		//初始化组件
@@ -51,8 +64,8 @@ public class MainFrame extends JFrame{
 		js = new JScrollPane(area,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		panel.add(js);
 		js.setBounds(0, 2, 195, 300);
-		btn = new JButton("显示");
-		btn2 = new JButton("消失");
+		btn = new JButton("吃子");
+		btn2 = new JButton("移动");
 		panel.add(btn);
 		btn.setBounds(0, 315, 60,40);
 		panel.add(btn2);
@@ -63,6 +76,7 @@ public class MainFrame extends JFrame{
        panel2 = new Mypanel();
 		panel2.setBorder(b);
 		panel2.setLayout(null);
+
 		//添加红子
 		int h = 0;
 		int w = 0;
@@ -70,25 +84,35 @@ public class MainFrame extends JFrame{
 			if(i%2==1){
 				w = 60;
 				for(int j = 1;j <= 5;j++){
-				red =  new JLabel( new ImageIcon("img\\red.png"));
+				red =  new Check(redImage);
 				panel2.add(red);
 				red.setBounds(w, h, 60,60);
 				//将棋子对象存储到hashmap中
-				StorageCheck.addCheck( id, new Check(id,"red",w/60+1,h/60+1));
+				red.setId(id);
+				red.setColor("red");
+				red.setX(w/60+1);
+				red.setY(h/60+1);
+				StorageCheck.addCheck( id, red);
 				w+=120;
+				id += 1;
 				}
 			}else{
 				w = 0;
 				for(int j = 1;j <= 5;j++){
-				red =  new JLabel( new ImageIcon("img\\red.png"));
+				red =  new Check( redImage);
 				panel2.add(red);
 				red.setBounds(w, h, 60, 60);
-				StorageCheck.addCheck( id, new Check(id,"red",w/60+1,h/60+1));
+				red.setId(id);
+				red.setColor("red");
+				red.setX(w/60+1);
+				red.setY(h/60+1);
+				StorageCheck.addCheck( id, red);
 				w+=120;
+				id += 1;
 				}
 			}
 			h+=60;
-			id +=1;
+	
 		}
 		//添加蓝子
 		h = 360;
@@ -96,41 +120,80 @@ public class MainFrame extends JFrame{
 			if(i%2==1){
 				w = 60;
 				for(int j = 1;j <= 5;j++){
-				blue = new JLabel(new ImageIcon("img\\blue.png"));
+				blue = new Check(blueImage);
 				panel2.add(blue);
 				blue.setBounds(w, h, 60,60);
-				StorageCheck.addCheck( id, new Check(id,"blue",w/60+1,h/60+1));
+				blue.setId(id);
+				blue.setColor("blue");
+				blue.setX(w/60+1);
+				blue.setY(h/60+1);
+				StorageCheck.addCheck( id,blue);
 				w+=120;
+				id += 1;
 				}
 			}else{
 				w = 0;
 				for(int j = 1;j <= 5;j++){
-			   blue = new JLabel(new ImageIcon("img\\blue.png"));
+				blue = new Check(blueImage);
 				panel2.add(blue);
 				blue.setBounds(w, h, 60, 60);
-				StorageCheck.addCheck( id, new Check(id,"blue",w/60+1,h/60+1));
+				blue.setId(id);
+				blue.setColor("blue");
+				blue.setX(w/60+1);
+				blue.setY(h/60+1);
+				StorageCheck.addCheck( id, blue);
 				w+=120;
+				id += 1;
 				}
 			}
 			h+=60;
-			id +=1;
 		}
+	
+//		Set set = StorageCheck.map.keySet();
+//		Iterator it = set.iterator();
+//		while(it.hasNext()){
+//			int id = (int) it.next();
+//			System.out.println(StorageCheck.getCheck(id).toString());
+//		}
 		this.getContentPane().add(panel2);
 		panel2.setBounds(0, 0,600,600);
-		this.setBounds(200, 70, 800,630);
+		this.setBounds(500, 30, 800,630);
 		this.setResizable(false);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//添加事件监听
-		//对棋盘进行监听，获取被选中的棋子
+		
 		panel2.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				Point point = e.getPoint();
 				int x = point.x/60+1;
 				int y = point.y/60+1;
 				//通过迭代器获取到选中的棋子
+				Set set = StorageCheck.map.keySet();
+				Iterator it = set.iterator();
+				while(it.hasNext()){
+					int id = (int) it.next();
+					check = (Check)StorageCheck.getCheck(id);
+					//通过遍历找到被选中的qizi
+					if(check.getX()==x&&check.getY()==y){
+						System.out.println(check.toString());
+						
+					}
+				}
 			}
 		});
+		//棋子移动
+		btn2.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				
+			}
+		});
+		//棋子消失
+		btn.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				check.setVisible(false);
+			}
+		});
+		
 	}
-	
 }

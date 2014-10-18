@@ -1,13 +1,24 @@
-package Checker;
+package checker;
+
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 /*
  * 定义棋子类，属性：id,color,x,y;
  * */
 
-public class Check {
+public class Check extends JPanel{
 		private int id;
 		private String color;
 		private int x;
 		private int y;
+		private Image img;
 		//构造函数
 		
 		public Check(int id, String color, int x, int y) {
@@ -20,6 +31,14 @@ public class Check {
 		public Check() {
 			
 		}
+		public Check(Image img){
+			this.img = img;
+		}
+		public void paint(Graphics g) {
+				g.drawImage(img, 0, 0, 60, 60, this);
+						
+		}
+		
 		//set与get方法
 		public int getId() {
 			return id;
