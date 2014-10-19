@@ -44,6 +44,7 @@ public class MainFrame extends JFrame{
 	private static final Toolkit toolkit = Toolkit.getDefaultToolkit();
 	Check red;
 	Check blue;
+	//获取图片
 	Image redImage = toolkit.getImage("img\\red.png");
 	Image redkingImage = toolkit.getImage("img\\redking.png");
 	Image blueImage = toolkit.getImage("img\\blue.png");
@@ -52,7 +53,7 @@ public class MainFrame extends JFrame{
 	//定义棋子的id
 	public static int id = 1;
 	//定义棋子类对象，用来存储选择到的棋子
-	Check check = null;
+    Check check = null;
 	//初始化函数init（）；
 	private void init() {
 		//初始化组件
@@ -162,12 +163,13 @@ public class MainFrame extends JFrame{
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//添加事件监听
-		
+
 		panel2.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				Point point = e.getPoint();
 				int x = point.x/60+1;
 				int y = point.y/60+1;
+				
 				//通过迭代器获取到选中的棋子
 				Set set = StorageCheck.map.keySet();
 				Iterator it = set.iterator();
@@ -176,22 +178,49 @@ public class MainFrame extends JFrame{
 					check = (Check)StorageCheck.getCheck(id);
 					//通过遍历找到被选中的qizi
 					if(check.getX()==x&&check.getY()==y){
-						System.out.println(check.toString());
 						
+						//在treemap中找到选中的棋子，就跳出循环
+						break;
+					}else{
+						//处理空指针异常
+						check = null;
+						System.out.println();
 					}
 				}
 			}
 		});
+		
 		//棋子移动
 		btn2.addMouseListener(new MouseAdapter() {
+			
+			int x;
+			int y;
+			Point point = null;
 			public void mouseClicked(MouseEvent e) {
-				
+				//移动到的位置在棋盘监听中获取
+				System.out.println(check.toString());
+				panel2.addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+							point = e.getPoint();
+							x = point.x/60+1;
+							y = point.y/60+1;
+							System.out.println(x+"::::::"+y);
+							check.setX(x);
+							check.setY(y);
+							check.setBounds(point.x, point.y, 60, 60);
+					}
+				});
 			}
 		});
+		
 		//棋子消失
 		btn.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
+	
 				check.setVisible(false);
+				int id = check.getId();
+				StorageCheck.removeCheck(id);
+				
 			}
 		});
 		
